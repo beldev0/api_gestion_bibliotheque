@@ -3,7 +3,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.viewsets import ModelViewSet
 from .serializer import CategorySerializer
 from .models import Categories
-from livres.models import Livres
+from books.models import Livres
 
 # Create your views here.
 

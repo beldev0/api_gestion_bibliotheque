@@ -1,3 +1,16 @@
-venv/
 cahier_de_charge.md
 bibliotheque_gestion.md
+
+# python
+__pycache__/
+*.pyc
+
+# virtual env
+venv/
+env/
+
+# database
+*.sqlite3
+
+# migrations compiled
+*.pyc

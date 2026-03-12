@@ -5,7 +5,7 @@ import uuid
 
 def rename_file(self, filename):
     ext = filename.split('.')[-1]
-    return f"{uuid.uuid4()}.{ext}"    
+    return f"books/{uuid.uuid4()}.{ext}"    
 
 # Create your models here.
 class Books(models.Model):

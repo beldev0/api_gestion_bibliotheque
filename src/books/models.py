@@ -11,7 +11,7 @@ def rename_file(self, filename):
 class Books(models.Model):
     categories = models.ManyToManyField(Categories, related_name='livres')
     authors = models.ManyToManyField(Authors, related_name='livresauthor')
-    isbn = models.CharField(max_length=13)
+    isbn = models.CharField(max_length=13, unique=True)
     titre = models.CharField(max_length=255)
     description = models.TextField()
     annee_publication = models.IntegerField()

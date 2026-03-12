@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from books.models import Books
+from books.models import Books, Copies
 from categories.serializer import CategorySerializer
 from authors.serializer import AuthorSerializer
 
@@ -25,3 +25,15 @@ class BookWriteSerializer(serializers.ModelSerializer):
         if len(value) != 13:
             raise serializers.ValidationError('ISBN non valide !')
         return value
+    
+
+class CopieReadSerializer(serializers.ModelSerializer):
+    book = BookReadSerializer()
+    class Meta:
+        model = Copies
+        fields = "__all__"
+
+class CopieWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Copies
+        fields = "__all__"

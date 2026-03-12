@@ -22,3 +22,17 @@ class Books(models.Model):
 
     def __str__(self):
         return f"{self.titre} en  {self.annee_publication}"
+
+
+class Copies(models.Model):
+    book  = models.ForeignKey(Books, on_delete=models.PROTECT)
+    date_acquisition = models.DateField(auto_now_add=True)
+    code = models.CharField(max_length=12)
+    localisation = models.CharField(max_length=20)
+    status = models.CharField(max_length=15, choices=[
+        ('disponible', 'DISPONIBLE'),
+        ('emprunte', 'EMPRUNTE'),
+        ('reserve', 'RESERVE'),
+        ('perdu', 'PERDU'),
+        ('retire', 'RETIRE')
+    ], default="disponible")

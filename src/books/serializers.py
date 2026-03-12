@@ -37,3 +37,9 @@ class CopieWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Copies
         fields = "__all__"
+
+    def validate(self, data):
+        if self.instance:
+            if data['status'] :
+                raise serializers.ValidationError("Ceci est une tâche du système. Vous n'etes pas autorisé")
+        return data        

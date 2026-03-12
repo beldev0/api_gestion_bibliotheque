@@ -25,7 +25,7 @@ class Books(models.Model):
 
 
 class Copies(models.Model):
-    book  = models.ForeignKey(Books, on_delete=models.PROTECT)
+    book  = models.ForeignKey(Books, on_delete=models.PROTECT, related_name='copies')
     date_acquisition = models.DateField(auto_now_add=True)
     code = models.CharField(max_length=12)
     localisation = models.CharField(max_length=20)

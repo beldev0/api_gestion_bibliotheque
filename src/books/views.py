@@ -13,9 +13,10 @@ class BookViewset(ModelViewSet):
             return BookReadSerializer
         return BookWriteSerializer
     
-    # def perform_destroy(self, instance):
-
-    #     return super().perform_destroy(instance)
+    def perform_destroy(self, instance):
+        if instance.copies.exist():
+            raise ValidationError('Ce livre possède des exemplaires')
+        return super().perform_destroy(instance)
 
 
 class CopiesViewset(ModelViewSet):
@@ -25,3 +26,7 @@ class CopiesViewset(ModelViewSet):
         if self.action in ['list', 'retrieve']:
             return CopieReadSerializer
         return CopieWriteSerializer
+    
+    # def perform_destroy(self, instance):
+
+    #     return super().perform_destroy(instance)

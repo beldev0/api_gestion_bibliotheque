@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'categories',
     'books',
     'authors',
-    "django_cleanup.apps.CleanupConfig"
+    "django_cleanup.apps.CleanupConfig",
+    'members'
 ]
 
 MIDDLEWARE = [

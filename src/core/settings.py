@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'books',
     'authors',
     "django_cleanup.apps.CleanupConfig",
-    'members'
+    'members',
+    'rest_framework_simplejwt'
 ]
 
 MIDDLEWARE = [
@@ -109,7 +110,10 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
 
@@ -133,3 +137,5 @@ STATIC_URL = 'static/'
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/api/media/"
+
+AUTH_USER_MODEL = 'members.CustomUser'

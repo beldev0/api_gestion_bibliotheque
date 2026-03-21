@@ -14,7 +14,8 @@ class BookViewset(ModelViewSet):
         return BookWriteSerializer
     
     def perform_destroy(self, instance):
-        if instance.copies.exist():
+        if instance.copies.exists():
+            print(instance.copies)
             raise ValidationError('Ce livre possède des exemplaires')
         return super().perform_destroy(instance)
 

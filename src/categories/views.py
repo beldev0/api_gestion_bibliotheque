@@ -14,4 +14,4 @@ class CategoryViewset(ModelViewSet):
     def perform_destroy(self, instance):
         if instance.livres.exist() :
             raise ValidationError("Suppression impossible. Livre associé existant")
-        return super().perform_destroy(instance)
+        return super().perform_destroy(instance) 

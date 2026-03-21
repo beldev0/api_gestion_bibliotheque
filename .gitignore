@@ -4,6 +4,7 @@ bibliotheque_gestion.md
 # python
 __pycache__/
 *.pyc
+*.png
 
 # virtual env
 venv/

@@ -1,4 +1,4 @@
-from rest_framework_simplejwt.tokens import Token
+from rest_framework_simplejwt.tokens import Token, RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from  datetime import timedelta
 from .models import InvitationToken
@@ -33,4 +33,17 @@ def isValidToken(token_string):
     except TokenError as e:
         return None, str(e)
 
+
+def get_token_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    refresh['email'] = user.email
+    refresh['role'] = user.role
+    refresh.access_token['email'] = user.email
+    refresh.access_token['role'] = user.role
+
+    return {
+        'refresh' : str(refresh),
+        'access_token' : str(refresh.access_token)
+    }
 

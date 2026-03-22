@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from utils import isValidToken
+from .utils import isValidToken
 from .models import InvitationToken
 
 User = get_user_model()

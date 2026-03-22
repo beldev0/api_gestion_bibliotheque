@@ -14,14 +14,15 @@ class CustomUserSerializer(serializers.ModelSerializer):
         fields = ['last_name', 'first_name', 'email', 'phone', 'address', 'carte_etudiant', 'birthday', 'status', 'profil', 'password', 'confirm_password','invite_token', 'role']
         extra_kwargs = {
             'role': {'read_only':True},
-            'status' : {'read_only':True}
+            'status' : {'read_only':True},
+            'password' : {'write_only': True}
         }
 
     def validate_phone(self, value):
         if not value.startswith('01'):
             raise serializers.ValidationError('Le numéro de télephone doit commencer par 01')
         
-        if len(value != 10):
+        if len(value) != 10:
             raise serializers.ValidationError('Taille du numéro non conforme')
         
         return value

@@ -56,7 +56,7 @@ class CustomUser(AbstractUser):
         ('actif', 'Actif'),
         ('suspendu', 'Suspendu'),
         ('bloque', 'Bloqué'),
-        ('expire', 'Expiré')
+        ('expire', 'Expiré'),
         ('attente', 'En attente')
     ], default="actif", max_length=8)
     profil = models.ImageField(upload_to=rename_file, blank=True, default=None, null=True),

@@ -42,6 +42,8 @@ class CustomManager(BaseUserManager):
 
 class CustomUser(AbstractUser):
     username = None
+    last_name = models.CharField(max_length=20)
+    first_name = models.CharField(max_length=20)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=10)
     address = models.CharField(max_length=255, blank=True, null=True)
@@ -59,7 +61,7 @@ class CustomUser(AbstractUser):
         ('expire', 'Expiré'),
         ('attente', 'En attente')
     ], default="actif", max_length=8)
-    profil = models.ImageField(upload_to=rename_file, blank=True, default=None, null=True),
+    profil = models.ImageField(upload_to=rename_file, blank=True, default=None, null=True)
 
 
     USERNAME_FIELD = "email"

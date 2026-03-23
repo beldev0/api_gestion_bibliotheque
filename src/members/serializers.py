@@ -8,8 +8,9 @@ User = get_user_model()
 class CustomUserSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(max_length=150, write_only=True)
     invite_token = serializers.CharField(required=False, allow_blank=True, write_only=True, max_length=255)
+    subscription_plan = serializers.CharField(required=False, allow_blank=True)
 
-    class Meta:
+    class Meta:     
         model = User
         fields = ['last_name', 'first_name', 'email', 'phone', 'address', 'carte_etudiant', 'birthday', 'status', 'profil', 'password', 'confirm_password','invite_token', 'role']
         extra_kwargs = {
@@ -55,7 +56,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         if 'carte_etudiant' in validated_data:
             validated_data['status'] = 'attente'
         
-        
+        print(validated_data)
         user = User.objects.create_user(**validated_data)
         return user
     
@@ -73,6 +74,30 @@ class changePasswordSerializer(serializers.Serializer):
     
     def validate_old_password(self, value):
         user =  self.context['request'].user
-        if not user.check_password(value):
-            raise serializers.ValidationError('Ancien mot de passe incorrect')
+        if user:
+            if not user.check_password(value):
+                raise serializers.ValidationError('Ancien mot de passe incorrect')
+            return value
+        raise serializers.ValidationError('Vous devez être authentifié !')
+    
+    def save(self):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['password'])
+        user.save()
+        return user
+    
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'last_name', 'first_name', 'email', 'phone', 'address', 'birthday', 'status', 'profil', 'role']
+        extra_kwargs = {'role': {'read_only':True}, 'status':{'read_only':True}, 'id': {'read_only':True}}
+
+    def validate_phone(self, value):
+        if not value.startswith('01'):
+            raise serializers.ValidationError('Le numéro de télephone doit commencer par 01')
+        
+        if len(value) != 10:
+            raise serializers.ValidationError('Taille du numéro non conforme')
+        
         return value

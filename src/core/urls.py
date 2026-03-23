@@ -23,6 +23,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from members.views import editUserProfil, me, allUsers
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,8 +32,11 @@ urlpatterns = [
     path('api/', include('authors.urls')),
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/auth/', include('members.urls'))
+    path('api/auth/', include('members.urls')),
+    path('api/users/editUserProfil', editUserProfil),
+    path('api/users/me', me),
+    path('api/users/', allUsers)
 ]
-
+    
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,11 +1,10 @@
 from django.db import models
 from  django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.conf import settings
 
 import uuid
 # Create your models here.
-# class Subscriptions(models.Model):
-#     member 
-#
+
 
 def rename_file(self, filename):
     ext = filename.split('.')[-1]
@@ -74,4 +73,15 @@ class InvitationToken(models.Model):
     jti = models.CharField(max_length=255)
     is_used = models.BooleanField(default=False)
     email = models.EmailField(unique=True)
+    
+
+class Subscriptions(models.Model):
+    member = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    formule = models.CharField(choices=[
+        ("standard", "STANDARD"),
+        ("student", "STUDENT"),
+        ("premium", "PREMIUM")
+    ])
+    status = models.CharField(choices=[('actif', "ACTIF"), ('expired', 'EXPIRED')])
+    date_deb = models.DateField(auto_now_add=True)
     

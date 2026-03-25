@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     "django_cleanup.apps.CleanupConfig",
     'members',
     'rest_framework_simplejwt',
-    'loans'
+    'loans',
+    'rules'
 ]
 
 MIDDLEWARE = [

@@ -1,6 +1,8 @@
 from django.db import models
 from  django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.conf import settings
+from  django.utils import timezone
+from datetime import timedelta
 
 import uuid
 # Create your models here.
@@ -14,6 +16,8 @@ def rename_etudiant_carte_file(self, filename):
     ext = filename.split('.')[-1]
     return f"carte/{uuid.uuid4()}.{ext}"
 
+def define_end_date():
+    return timezone.now() + timedelta(days=365)
 
 class CustomManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -76,12 +80,14 @@ class InvitationToken(models.Model):
     
 
 class Subscriptions(models.Model):
-    member = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    member = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='subscription')
     formule = models.CharField(choices=[
         ("standard", "STANDARD"),
         ("student", "STUDENT"),
         ("premium", "PREMIUM")
     ])
-    status = models.CharField(choices=[('actif', "ACTIF"), ('expired', 'EXPIRED')])
+    status = models.CharField(choices=[('actif', "ACTIF"), ('expired', 'EXPIRED')], default='actif')
     date_deb = models.DateField(auto_now_add=True)
+    date_end = models.DateField(default=define_end_date)
     

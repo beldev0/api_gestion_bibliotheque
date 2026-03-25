@@ -49,7 +49,7 @@ def editUserProfil(request):
 def me(request):
     user_id = request.user.id
 
-    user = get_object_or_404(User, id=user_id)
+    user = User.objects.prefetch_related('subscription').get(id=user_id)
     serializer = UserProfileSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('formule', models.CharField(choices=[('standard', 'STANDARD'), ('student', 'STUDENT'), ('premium', 'PREMIUM')])),
                 ('status', models.CharField(choices=[('actif', 'ACTIF'), ('expired', 'EXPIRED')], default='actif')),
                 ('date_deb', models.DateField(auto_now_add=True)),
-                ('date_end', models.DateField(default=members.models.define_end_date)),
+                ('date_end', models.DateField()),
                 ('member', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
             ],
         ),

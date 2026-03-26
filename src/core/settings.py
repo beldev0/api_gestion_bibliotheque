@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'members',
     'rest_framework_simplejwt',
     'loans',
-    'rules'
+    'rules',
+    'rest_framework_simplejwt.token_blacklist'
 ]
 
 MIDDLEWARE = [
@@ -124,7 +125,8 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True,      
-    "BLACKLIST_AFTER_ROTATION": True
+    "BLACKLIST_AFTER_ROTATION": True,
+    "TOKEN_OBTAIN_SERIALIZER" : "members.serializers.MyTokenObtainPairSerializer"
 }
 
 

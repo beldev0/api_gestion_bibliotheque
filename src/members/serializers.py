@@ -1,8 +1,14 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .utils import isValidToken
+from .utils import isValidToken, get_token_for_user
 from .models import InvitationToken, Subscriptions
+from rules.models import SubscriptionPlanRules
 from datetime import date
+from  django.utils import timezone
+from datetime import timedelta
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 User = get_user_model()
 
@@ -36,6 +42,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(err)
             return jti
 
+    def validate_subscription_plan(self, value):
+        allSubs = SubscriptionPlanRules.objects.all()
+        if not value.lower() in [s.formule for s in allSubs]:
+            raise serializers.ValidationError('La formule est inconnu')
+        return value
     
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -48,13 +59,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
             if data['subscription_plan'] == 'student' and 'carte_etudiant' not in data:
                 raise serializers.ValidationError({"carte_etudiant": "Vous devez soumettre votre carte etudiant"})
 
-            if data['subscription_plan'] not in ['student', 'premium', 'standard'] :
-                raise serializers.ValidationError({"subscription_plan": "Plan d'abonnement non reconnu"})
-
         return data
     
 
     def create(self, validated_data):
+        print(validated_data)
         confirm_password = validated_data.pop('confirm_password')
         if 'invite_token' in validated_data:
             jti =  validated_data.pop('invite_token')
@@ -71,12 +80,17 @@ class CustomUserSerializer(serializers.ModelSerializer):
             subscription_plan = validated_data.pop('subscription_plan')
 
         
-        print(validated_data)
+        # print(validated_data)
 
         user = User.objects.create_user(**validated_data)
 
         if subscription_plan:
-            subs = Subscriptions.objects.create(member = user, formule=subscription_plan)
+            print('There is subscription')
+            linked_subs = SubscriptionPlanRules.objects.filter(formule=subscription_plan).get()
+            print(linked_subs)
+            print(linked_subs.price)
+            date_end = timezone.now() + timedelta(days=linked_subs.lifetime)
+            subs = Subscriptions.objects.create(member = user, formule=subscription_plan, price=linked_subs.price, date_end=date_end)
             print(subs.id)
         return user
     
@@ -118,6 +132,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         delta = instance.date_end - today
         return delta.days
 
+
 class UserProfileSerializer(serializers.ModelSerializer):
     subscription = SubscriptionSerializer(many=True, read_only=True)
 
@@ -134,3 +149,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Taille du numéro non conforme')
         
         return value
+    
+class UserCanBorrowSerializer(serializers.ModelSerializer):
+    total_loan = serializers.IntegerField()
+    total_penalty = serializers.IntegerField()
+    subscription = SubscriptionSerializer(read_only=True, many=True)
+    class Meta:
+        model = User
+        fields = ['id','subscription', 'total_penalty', 'total_loan', 'last_name', 'first_name', 'status']
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        return get_token_for_user(token, user)
+        
+
+        

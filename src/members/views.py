@@ -5,7 +5,12 @@ from rest_framework.decorators import api_view, permission_classes
 from .serializers import *
 from .utils import get_token_for_user
 from django.contrib.auth import get_user_model
-
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.db.models import Q, Count, Sum
+from loans.models import Loans
+from django.db.models.functions import Coalesce
+from django.db.models import Prefetch
+from .models import Subscriptions
 User = get_user_model()
 
 # Create your views here.
@@ -14,8 +19,13 @@ def register(request):
     serializer = CustomUserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
-        tokens =  get_token_for_user(user)
+        refresh = RefreshToken.for_user(user)
+        get_token_for_user(refresh, user)
         
+        tokens = {
+            'refresh': str(refresh),
+            'access_token': str(refresh.access_token)
+        }
         return Response({
             'user' : serializer.data,
             **tokens
@@ -51,6 +61,8 @@ def me(request):
 
     user = User.objects.prefetch_related('subscription').get(id=user_id)
     serializer = UserProfileSerializer(user)
+    token = request.auth
+    print(token['formule'])
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
@@ -58,3 +70,21 @@ def allUsers(request):
     users = User.objects.all()
     serializer = UserProfileSerializer(users, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def userCanBorrow(request, id):
+    active_subs = Subscriptions.objects.filter(status='actif')
+    user = User.objects.prefetch_related(Prefetch('subscription', queryset=active_subs)).annotate(
+    total_loan=Count(
+        'loan',
+        filter=Q(loan__status='pending')
+    ),
+    total_penalty=Coalesce(Sum(
+        'loan__penalty__amount',
+        filter=Q(loan__penalty__status='nsold')
+    ), 0)).get(id=id)
+
+    serializer = UserCanBorrowSerializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+    

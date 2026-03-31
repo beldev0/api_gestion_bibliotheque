@@ -34,16 +34,13 @@ def isValidToken(token_string):
         return None, str(e)
 
 
-def get_token_for_user(user):
-    refresh = RefreshToken.for_user(user)
+def get_token_for_user(token, user):
 
-    refresh['email'] = user.email
-    refresh['role'] = user.role
-    refresh.access_token['email'] = user.email
-    refresh.access_token['role'] = user.role
+    active_sub = user.subscription.filter(status='actif').first()
+    # Add custom claims
+    token['email'] = user.email
+    token['role'] = user.role
+    token['formule'] = active_sub.formule if active_sub else None
 
-    return {
-        'refresh' : str(refresh),
-        'access_token' : str(refresh.access_token)
-    }
+    return token
 

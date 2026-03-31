@@ -23,7 +23,8 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from members.views import editUserProfil, me, allUsers
+from members.views import editUserProfil, me, allUsers, userCanBorrow
+from books.views import get_book
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,7 +37,10 @@ urlpatterns = [
     path('api/auth/', include('members.urls')),
     path('api/users/editUserProfil', editUserProfil),
     path('api/users/me', me),
-    path('api/users/', allUsers)
+    path('api/users/', allUsers),
+    path('api/users/canBorrow/<int:id>', userCanBorrow),
+    path('api/copies/getCopie/<str:code>', get_book),
+    path('api/loans/', include('loans.urls'))
 ]
     
 
